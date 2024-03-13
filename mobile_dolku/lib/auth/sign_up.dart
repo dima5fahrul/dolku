@@ -105,7 +105,7 @@ class _SignUpState extends State<SignUp> {
                 ],
               ),
               ElevatedButton(
-                onPressed: () => setState(() => _signUp()),
+                onPressed: () => _signUp(),
                 child: const Text('Sign Up'),
               ),
             ],
