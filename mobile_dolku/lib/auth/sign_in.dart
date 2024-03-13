@@ -78,9 +78,9 @@ class _SignInState extends State<SignIn> {
                 ],
               ),
               ElevatedButton(
-                  onPressed: () => setState(() => _login(
+                  onPressed: () => _login(
                       email: emailController.text,
-                      password: passwordController.text)),
+                      password: passwordController.text),
                   child: const Text('Sign Up')),
             ],
           ),
