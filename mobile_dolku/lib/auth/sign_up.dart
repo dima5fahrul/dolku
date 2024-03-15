@@ -1,7 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_dolku/components/component.dart';
+
+import '../components/common_button.dart';
+import '../components/common_form.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -72,41 +77,77 @@ class _SignUpState extends State<SignUp> {
 
   @override
   Widget build(BuildContext context) {
+    var primaryColor = Theme.of(context).colorScheme.primary;
+
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Container(
           padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              const Text('Sign Up'),
-              TextField(
+              Center(
+                  child: Text('Sign up',
+                      style: Theme.of(context).textTheme.displaySmall)),
+              const SizedBox(height: 40),
+              Text('Name',
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelLarge!
+                      .copyWith(fontWeight: FontWeight.w400)),
+              const SizedBox(height: 8),
+              CommonForm(
                   controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Nama')),
-              TextField(
+                  focusedColor: primaryColor,
+                  hintText: 'Enter your name'),
+              const SizedBox(height: 16),
+              Text('E-mail',
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelLarge!
+                      .copyWith(fontWeight: FontWeight.w400)),
+              const SizedBox(height: 8),
+              CommonForm(
                   controller: emailController,
-                  decoration: const InputDecoration(labelText: 'Email')),
-              TextField(
+                  focusedColor: primaryColor,
+                  hintText: 'Enter your email'),
+              const SizedBox(height: 16),
+              Text('Password',
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelLarge!
+                      .copyWith(fontWeight: FontWeight.w400)),
+              const SizedBox(height: 8),
+              CommonForm(
                   controller: passwordController,
-                  decoration: const InputDecoration(labelText: 'Password')),
+                  focusedColor: primaryColor,
+                  isPassword: true,
+                  hintText: 'Enter your password'),
+              const SizedBox(height: 50),
+              CommonButton(
+                  text: 'Sign up', borderColor: primaryColor, onTap: _signUp),
+              const SizedBox(height: 8),
+              CommonButton(
+                  withBorder: false,
+                  text: 'Sign in',
+                  onTap: () => Navigator.pop(context)),
+              const SizedBox(height: 8),
               Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text('Belum punya akun?',
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.primary)),
-                  const SizedBox(width: 12),
-                  GestureDetector(
-                    onTap: () => Navigator.pushNamed(context, '/sign_up'),
-                    child: Text('Sign Up',
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary)),
-                  ),
+                  Text('By signing up, you agree to our ',
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelSmall!
+                          .copyWith(color: Colors.grey.shade600)),
+                  Text('Terms & Conditions',
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelSmall!
+                          .copyWith(color: primaryColor)),
                 ],
-              ),
-              ElevatedButton(
-                onPressed: () => _signUp(),
-                child: const Text('Sign Up'),
               ),
             ],
           ),
