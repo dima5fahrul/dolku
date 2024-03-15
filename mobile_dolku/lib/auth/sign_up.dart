@@ -35,6 +35,27 @@ class _SignUpState extends State<SignUp> {
           email: emailController.text, password: passwordController.text);
       await _addUser();
     } on FirebaseAuthException catch (e) {
+      debugPrint('e : ${e.code}');
+      Component.showLoading(context);
+      await Future.delayed(const Duration(seconds: 2));
+      Navigator.pop(context);
+      if (e.code == 'invalid-email') {
+        Component.showSnackbar(
+            message: 'Invalid email', color: Colors.red, context: context);
+      }
+
+      if (e.code == 'invalid-credential') {
+        Component.showSnackbar(
+            message: 'Invalid credential', color: Colors.red, context: context);
+      }
+
+      if (e.code == 'channel-error') {
+        Component.showSnackbar(
+            message: 'Form must be filled',
+            color: Colors.red,
+            context: context);
+      }
+
       if (e.code == 'weak-password') {
         Component.showSnackbar(
             message: 'The password provided is too weak.',
@@ -63,9 +84,12 @@ class _SignUpState extends State<SignUp> {
     return users.add({
       'name': nameController.text,
       'email': emailController.text,
-    }).then((value) {
+    }).then((value) async {
+      Component.showLoading(context);
+      await Future.delayed(const Duration(seconds: 2));
       Navigator.pushReplacementNamed(context, '/home');
-      debugPrint("User Added");
+      Component.showSnackbar(
+          message: 'Welcome to the app', color: Colors.green, context: context);
     }).catchError((error) {
       debugPrint("Failed to add user: $error");
       Component.showSnackbar(

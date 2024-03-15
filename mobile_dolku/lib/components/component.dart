@@ -12,5 +12,9 @@ class Component {
 
   static void showLoading(BuildContext context) => showDialog(
       context: context,
-      builder: (context) => const Center(child: CircularProgressIndicator()));
+      builder: (context) => const Center(
+              child: CircularProgressIndicator(
+            color: Colors.green,
+          )),
+      barrierDismissible: false);
 }

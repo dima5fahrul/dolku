@@ -33,18 +33,30 @@ class _SignInState extends State<SignIn> {
     try {
       await auth.signInWithEmailAndPassword(email: email, password: password);
       Component.showLoading(context);
+      await Future.delayed(const Duration(seconds: 1));
       Navigator.pushReplacementNamed(context, '/home');
       Component.showSnackbar(
           message: 'Welcome back', color: Colors.green, context: context);
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
+      debugPrint('e : ${e.code}');
+      Component.showLoading(context);
+      await Future.delayed(const Duration(seconds: 2));
+      Navigator.pop(context);
+      if (e.code == 'invalid-email') {
         Component.showSnackbar(
-            message: 'User not found', color: Colors.red, context: context);
+            message: 'Invalid email', color: Colors.red, context: context);
       }
 
-      if (e.code == 'wrong-password') {
+      if (e.code == 'invalid-credential') {
         Component.showSnackbar(
-            message: 'Wrong password', color: Colors.red, context: context);
+            message: 'Invalid credential', color: Colors.red, context: context);
+      }
+
+      if (e.code == 'channel-error') {
+        Component.showSnackbar(
+            message: 'Form must be filled',
+            color: Colors.red,
+            context: context);
       }
     }
   }

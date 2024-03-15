@@ -26,7 +26,6 @@ class _CommonFormState extends State<CommonForm> {
     return TextField(
       controller: widget.controller,
       autocorrect: widget.isPassword ? false : true,
-      focusNode: FocusNode(),
       obscureText: widget.isPassword ? _obscureText : false,
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.all(10),
