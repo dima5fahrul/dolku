@@ -59,6 +59,11 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  # assets
+  assets:
+    - assets/
+    - assets/fonts/
+
   fonts:
     - family: Poppins
       fonts:

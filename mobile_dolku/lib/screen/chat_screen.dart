@@ -68,18 +68,23 @@ class _HomeScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        shadowColor: Colors.black,
         surfaceTintColor: Colors.white,
         backgroundColor: Colors.white,
         toolbarHeight: 60,
         elevation: 1,
-        leading: const Icon(Icons.chat, size: 30),
-        actions: const [
-          Icon(Icons.settings),
-          SizedBox(width: 10),
-          Icon(Icons.person),
-          SizedBox(width: 10),
+        leading: const Icon(Icons.arrow_back_ios_new, size: 30),
+        title: Text('Dolku',
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge!
+                .copyWith(fontWeight: FontWeight.w600)),
+        centerTitle: true,
+        actions: [
+          GestureDetector(
+              onTap: _logout, child: Image.asset('assets/logo.png', width: 30)),
+          const SizedBox(width: 20),
         ],
       ),
       body: Padding(
@@ -145,15 +150,15 @@ class _ChatBubble extends StatelessWidget {
               BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
           decoration: BoxDecoration(
             color: isUser
-                ? Colors.grey.shade200
-                : Theme.of(context).colorScheme.primary,
+                ? Theme.of(context).colorScheme.primary
+                : Colors.grey.shade200,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Text(text,
               style: Theme.of(context)
                   .textTheme
                   .bodyMedium!
-                  .copyWith(color: isUser ? Colors.black : Colors.white)),
+                  .copyWith(color: !isUser ? Colors.black : Colors.white)),
         ),
       ),
     );
@@ -184,13 +189,14 @@ class _PromptViewState extends State<_PromptView> {
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(10),
             filled: true,
-            fillColor: Colors.grey.shade100,
+            fillColor: Colors.white,
             hintText: 'Ask me anything!',
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+            border:
+                OutlineInputBorder(borderRadius: BorderRadius.circular(100)),
             suffixIcon: IconButton(
-              onPressed: widget.onSend,
-              icon: const Icon(Icons.send),
-            ),
+                onPressed: widget.onSend,
+                icon: Icon(Icons.send,
+                    color: Theme.of(context).colorScheme.primary)),
           ),
         ),
       ),
