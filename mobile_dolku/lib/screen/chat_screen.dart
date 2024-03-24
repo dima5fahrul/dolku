@@ -12,10 +12,57 @@ class ChatScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<ChatScreen> {
   final TextEditingController _promptController = TextEditingController();
+  String text = '';
+  bool isLoading = false;
+  List<String> listText = [];
+
+  @override
+  void initState() {
+    super.initState();
+    isLoading = true;
+    Future.delayed(const Duration(seconds: 1), () => _initialPrompt());
+    isLoading = false;
+  }
 
   void _logout() async {
     await FirebaseAuth.instance.signOut();
     Navigator.pushReplacementNamed(context, '/sign_in');
+  }
+
+  void _initialPrompt() {
+    _promptController.text = 'How can I help you today?';
+
+    setState(() {
+      isLoading = true;
+      listText.add(_promptController.text);
+      isLoading = false;
+    });
+    _promptController.clear();
+  }
+
+  void _onSend() async {
+    if (_promptController.text.isNotEmpty) {
+      final String message = _promptController.text;
+      setState(() {
+        isLoading = true;
+        listText.add(message);
+        isLoading = false;
+      });
+
+      _promptController.clear();
+      await Future.delayed(const Duration(seconds: 1));
+      setState(() {
+        isLoading = true;
+        if (message.toLowerCase().contains('invest')) {
+          listText.add(
+              'Hey, thanks for the question! You can start investment to companies that you think will provide reciprocity. But you need to know, giving an investment does not mean that the total value of the money given will be fully returned, there could be a loss if the company invested in goes bankrupt. Remain careful in choosing companies to invest in');
+        } else {
+          listText.add(
+              'Sure, here is the list of company with stable shares: Unilever (UNVR), Indofood (ICBP), Bank Central Asia (BBCA), Bank Rakyat Indonesia (BBRI), and Telkom Indonesia (TLKM).');
+        }
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -39,8 +86,8 @@ class _HomeScreenState extends State<ChatScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Stack(
           children: [
-            _PromptView(promptController: _promptController),
-            const _ChatView(),
+            _PromptView(promptController: _promptController, onSend: _onSend),
+            _ChatView(listText: listText, isLoading: isLoading),
           ],
         ),
       ),
@@ -48,18 +95,33 @@ class _HomeScreenState extends State<ChatScreen> {
   }
 }
 
-class _ChatView extends StatelessWidget {
-  const _ChatView();
+class _ChatView extends StatefulWidget {
+  const _ChatView({required this.listText, required this.isLoading});
 
+  final List<String> listText;
+  final bool isLoading;
+
+  @override
+  State<_ChatView> createState() => _ChatViewState();
+}
+
+class _ChatViewState extends State<_ChatView> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height / 1.35,
-      child: ListView(
-        children: const [
-          _ChatBubble(text: 'Hello, how can I help you?', isUser: false),
-          _ChatBubble(text: 'I need help with my account', isUser: true),
-        ],
+      height: MediaQuery.of(context).size.height * 0.765,
+      child: ListView.builder(
+        itemCount: widget.listText.length,
+        itemBuilder: (context, index) {
+          if (widget.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else {
+            return _ChatBubble(
+              text: widget.listText[index],
+              isUser: index % 2 == 1,
+            );
+          }
+        },
       ),
     );
   }
@@ -74,25 +136,24 @@ class _ChatBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.only(bottom: 8),
       child: Align(
         alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-        child: FittedBox(
-          fit: BoxFit.fitWidth,
-          child: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: isUser
-                  ? Colors.grey.shade200
-                  : Theme.of(context).colorScheme.primary,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Text(text,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium!
-                    .copyWith(color: isUser ? Colors.black : Colors.white)),
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          constraints:
+              BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
+          decoration: BoxDecoration(
+            color: isUser
+                ? Colors.grey.shade200
+                : Theme.of(context).colorScheme.primary,
+            borderRadius: BorderRadius.circular(10),
           ),
+          child: Text(text,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium!
+                  .copyWith(color: isUser ? Colors.black : Colors.white)),
         ),
       ),
     );
@@ -100,9 +161,10 @@ class _ChatBubble extends StatelessWidget {
 }
 
 class _PromptView extends StatefulWidget {
-  const _PromptView({required this.promptController});
+  const _PromptView({required this.promptController, required this.onSend});
 
   final TextEditingController promptController;
+  final void Function() onSend;
 
   @override
   State<_PromptView> createState() => _PromptViewState();
@@ -126,7 +188,7 @@ class _PromptViewState extends State<_PromptView> {
             hintText: 'Ask me anything!',
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
             suffixIcon: IconButton(
-              onPressed: () {},
+              onPressed: widget.onSend,
               icon: const Icon(Icons.send),
             ),
           ),
